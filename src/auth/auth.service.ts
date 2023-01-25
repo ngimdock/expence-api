@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserCredentialTaken } from 'src/users/exceptions';
 import { AuthDto } from './dtos';
 import * as argon from 'argon2';
+import { CredentialsIncorrectException } from 'src/common/exception';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly prisma: PrismaService) {}
 
   async register(authDto: AuthDto) {
-    const userExist = await this.prisma.user.findFirst({
+    const userExist = await this.prisma.user.findUnique({
       where: {
         email: authDto.email,
       },
     });
 
-    if (userExist) throw new UserCredentialTaken();
+    if (userExist) throw new CredentialsIncorrectException();
 
     const hashedPassword = await argon.hash(authDto.password);
 
@@ -32,6 +32,21 @@ export class AuthService {
   }
 
   async login(authDto: AuthDto) {
-    return authDto;
+    const userFound = await this.prisma.user.findUnique({
+      where: {
+        email: authDto.email,
+      },
+    });
+
+    if (!userFound) throw new CredentialsIncorrectException();
+
+    const isPasswordValid = await argon.verify(
+      userFound.hash,
+      authDto.password,
+    );
+
+    if (!isPasswordValid) throw new CredentialsIncorrectException();
+
+    return userFound;
   }
 }

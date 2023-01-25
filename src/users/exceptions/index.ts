@@ -1,1 +1,1 @@
-export * from './user-credential-taken.exception';
+export * from './user-not-found.exception';
