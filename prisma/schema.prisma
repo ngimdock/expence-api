@@ -20,5 +20,24 @@ model User {
   firstname String?
   lastname String?
 
+  expenses Expense[]
+
   @@map("user") 
+}
+
+model Expense {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title String
+  description String?
+  amount String
+  date DateTime
+
+  userId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("expense")
 }
