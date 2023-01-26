@@ -28,7 +28,7 @@ export class AuthService {
       data: userData,
     });
 
-    return user;
+    return { id: user.id, email: user.email };
   }
 
   async login(authDto: AuthDto) {
@@ -47,6 +47,6 @@ export class AuthService {
 
     if (!isPasswordValid) throw new CredentialsIncorrectException();
 
-    return userFound;
+    return { id: userFound.id, email: userFound.email };
   }
 }
