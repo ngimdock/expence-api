@@ -4,7 +4,6 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Req,
   Session,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -32,6 +31,9 @@ export class AuthController {
   }
 
   private serializeSession(id: number, email: string, session: UserSession) {
-    session.user = { id, email };
+    session.user = {
+      id,
+      email,
+    };
   }
 }
