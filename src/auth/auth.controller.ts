@@ -7,6 +7,7 @@ import {
   Session,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { PublicRoute } from './decorators';
 import { AuthDto } from './dtos';
 import { authRoutes } from './enums';
 import { UserSession } from './types';
@@ -15,6 +16,7 @@ import { UserSession } from './types';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @PublicRoute()
   @Post(authRoutes.register)
   async register(@Body() authDto: AuthDto, @Session() session: UserSession) {
     const { id, email } = await this.authService.register(authDto);
@@ -22,6 +24,7 @@ export class AuthController {
     this.serializeSession(id, email, session);
   }
 
+  @PublicRoute()
   @Post(authRoutes.login)
   @HttpCode(HttpStatus.OK)
   async login(@Body() authDto: AuthDto, @Session() session: UserSession) {
