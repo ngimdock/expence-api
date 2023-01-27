@@ -6,8 +6,10 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { GetUserId } from 'src/auth/decorators';
+import { PaginateDto } from '../common/dtos';
 import { CreateExpenseDto, UpdateExpenseDto } from './dtos';
 import { expenseRoutes } from './enums';
 import { ExpenseService } from './expense.service';
@@ -19,8 +21,11 @@ export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
   @Get()
-  async findAllUserExpenses(@GetUserId() userId: number) {
-    return this.expenseService.findAllUserExpenses(userId);
+  async findAllUserExpenses(
+    @GetUserId() userId: number,
+    @Query() paginate: PaginateDto,
+  ) {
+    return this.expenseService.findAllUserExpenses(userId, paginate);
   }
 
   @Get(`:${ExpenseController.expenseId}`)

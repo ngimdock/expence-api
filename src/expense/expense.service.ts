@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PaginateDto } from 'src/common/dtos';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResourseNotExist, ResourseAccessDenied } from '../common/exception';
 import { CreateExpenseDto, UpdateExpenseDto } from './dtos';
@@ -7,7 +8,7 @@ import { CreateExpenseDto, UpdateExpenseDto } from './dtos';
 export class ExpenseService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllUserExpenses(userId: number) {
+  async findAllUserExpenses(userId: number, paginate: PaginateDto) {
     return this.prisma.expense.findMany({
       where: {
         userId,
@@ -21,6 +22,8 @@ export class ExpenseService {
           },
         },
       },
+      take: paginate.limit,
+      skip: paginate.offset,
     });
   }
 
