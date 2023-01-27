@@ -12,6 +12,15 @@ export class ExpenseService {
       where: {
         userId,
       },
+      include: {
+        user: {
+          select: {
+            email: true,
+            firstname: true,
+            lastname: true,
+          },
+        },
+      },
     });
   }
 
@@ -19,11 +28,11 @@ export class ExpenseService {
     const expenseFound = await this.prisma.expense.findFirst({
       where: {
         id: expenseId,
+        userId: userId,
       },
       include: {
         user: {
           select: {
-            id: true,
             email: true,
             firstname: true,
             lastname: true,
