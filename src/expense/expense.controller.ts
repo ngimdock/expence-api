@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -28,8 +29,6 @@ export class ExpenseController {
     @GetUserId() userId: number,
     @Param(ExpenseController.expenseId, ParseIntPipe) expenseId: number,
   ) {
-    console.log({ expenseId });
-
     return this.expenseService.findByIdUserExpense(userId, expenseId);
   }
 
@@ -54,6 +53,11 @@ export class ExpenseController {
     );
   }
 
-  // @Delete(`:${ExpenseController.expenseId}`)
-  // async deleteByIdUserExpense(@GetUserId() userId: number) {}
+  @Delete(`:${ExpenseController.expenseId}`)
+  async deleteByIdUserExpense(
+    @GetUserId() userId: number,
+    @Param(ExpenseController.expenseId, ParseIntPipe) expenseId: number,
+  ) {
+    return this.expenseService.deleteByIdUserExpense(userId, expenseId);
+  }
 }

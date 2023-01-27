@@ -88,7 +88,7 @@ export class ExpenseService {
   async deleteByIdUserExpense(userId: number, expenseId: number) {
     const expenseFound = await this.findByIdUserExpense(userId, expenseId);
 
-    await this.prisma.expense.delete({
+    const data = await this.prisma.expense.delete({
       where: {
         id: expenseId,
       },
