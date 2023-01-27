@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -27,7 +26,7 @@ export class ExpenseController {
   @Get(`:${ExpenseController.expenseId}`)
   async findByIdUserExpense(
     @GetUserId() userId: number,
-    @Param(ExpenseController.expenseId, ParseIntPipe) expenseId: number,
+    @Param(ExpenseController.expenseId) expenseId: number,
   ) {
     return this.expenseService.findByIdUserExpense(userId, expenseId);
   }
@@ -43,7 +42,7 @@ export class ExpenseController {
   @Patch(`${expenseRoutes.update}/:${ExpenseController.expenseId}`)
   async updateUserExpense(
     @GetUserId() userId: number,
-    @Param(ExpenseController.expenseId, ParseIntPipe) expenseId: number,
+    @Param(ExpenseController.expenseId) expenseId: number,
     @Body() updateExpenseDto: Partial<UpdateExpenseDto>,
   ) {
     return this.expenseService.updateUserExpense(
@@ -56,7 +55,7 @@ export class ExpenseController {
   @Delete(`:${ExpenseController.expenseId}`)
   async deleteByIdUserExpense(
     @GetUserId() userId: number,
-    @Param(ExpenseController.expenseId, ParseIntPipe) expenseId: number,
+    @Param(ExpenseController.expenseId) expenseId: number,
   ) {
     return this.expenseService.deleteByIdUserExpense(userId, expenseId);
   }
