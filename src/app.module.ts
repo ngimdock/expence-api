@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { CacheModule, Global, Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { SessionGuard } from './auth/guards';
@@ -8,7 +8,15 @@ import { ExpenseModule } from './expense/expense.module';
 
 @Global()
 @Module({
-  imports: [PrismaModule, AuthModule, UserModule, ExpenseModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    UserModule,
+    ExpenseModule,
+    CacheModule.register({
+      isGlobal: true,
+    }),
+  ],
   providers: [
     {
       provide: APP_GUARD,
