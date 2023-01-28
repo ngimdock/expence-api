@@ -9,3 +9,13 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
       POSTGRES_DB: expence_db
+  redis:
+    image: redis:7
+    ports:
+      - 6379:6379
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOST=local:redis:6379
+    ports:
+      - 8081:8081
