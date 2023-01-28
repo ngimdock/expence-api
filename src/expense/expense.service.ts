@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { PaginateDto } from 'src/common/dtos';
+import { PaginateDto } from '../common/dtos';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResourseNotExist, ResourseAccessDenied } from '../common/exception';
 import { CreateExpenseDto, UpdateExpenseDto } from './dtos';
+import { PaginateResultType } from '../common/types';
 
 @Injectable()
 export class ExpenseService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllUserExpenses(userId: number, paginate: PaginateDto) {
-    return this.prisma.expense.findMany({
+  async findAllUserExpenses(
+    userId: number,
+    paginate: PaginateDto,
+  ): Promise<PaginateResultType> {
+    const expenses = await this.prisma.expense.findMany({
       where: {
         userId,
       },
@@ -25,6 +29,18 @@ export class ExpenseService {
       take: paginate.limit,
       skip: paginate.offset,
     });
+
+    const count = await this.prisma.expense.count({
+      where: {
+        userId,
+      },
+    });
+
+    return {
+      count,
+      hasMore: count > paginate.offset + paginate.limit,
+      data: expenses,
+    };
   }
 
   async findByIdUserExpense(userId: number, expenseId: number) {
