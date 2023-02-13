@@ -3,9 +3,11 @@ import {
   CacheInterceptor,
   CacheKey,
   CacheTTL,
+  CACHE_MANAGER,
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   Patch,
   Post,
@@ -17,16 +19,21 @@ import { PaginateDto } from '../common/dtos';
 import { CreateExpenseDto, UpdateExpenseDto } from './dtos';
 import { expenseRoutes } from './enums';
 import { ExpenseService } from './expense.service';
+import { Cache } from 'cache-manager';
+import { json } from 'stream/consumers';
 
 @Controller('expense')
 export class ExpenseController {
   private static readonly expenseId = 'expenseId';
 
-  constructor(private readonly expenseService: ExpenseService) {}
+  constructor(
+    private readonly expenseService: ExpenseService,
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
+  ) {}
 
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(5)
-  @CacheKey('all-expenses')
+  @CacheTTL(10)
+  @CacheKey('expenses')
   @Get()
   async findAllUserExpenses(
     @GetUserId() userId: number,
@@ -40,6 +47,18 @@ export class ExpenseController {
     @GetUserId() userId: number,
     @Param(ExpenseController.expenseId) expenseId: number,
   ) {
+    await this.cacheService.set('lastname', 'John Doe');
+
+    const value = await this.cacheService.get('lastname');
+
+    const value2 = await this.cacheService.get(
+      'sess:K4rdxF1iOlaUwYx3nSMktuJrq2c_FEQB',
+    );
+
+    console.log({ value });
+
+    console.log({ value2 });
+
     return this.expenseService.findByIdUserExpense(userId, expenseId);
   }
 
