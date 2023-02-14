@@ -8,6 +8,8 @@ import { ExpenseModule } from './expense/expense.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as redisStore from 'cache-manager-redis-store';
 import { RedisClientOptions } from 'redis';
+import { SchedulerModule } from './scheduler/sheduler.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Global()
 @Module({
@@ -16,7 +18,8 @@ import { RedisClientOptions } from 'redis';
     AuthModule,
     UserModule,
     ExpenseModule,
-
+    ScheduleModule.forRoot(),
+    SchedulerModule,
     CacheModule.registerAsync<RedisClientOptions>({
       isGlobal: true,
 

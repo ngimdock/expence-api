@@ -20,6 +20,9 @@ model User {
   firstname String?
   lastname String?
 
+  initialBalance Int @default(2000)
+  currentBalance Int @default(2000)
+
   expenses Expense[]
 
   @@map("user") 

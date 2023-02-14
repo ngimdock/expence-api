@@ -20,7 +20,6 @@ import { CreateExpenseDto, UpdateExpenseDto } from './dtos';
 import { expenseRoutes } from './enums';
 import { ExpenseService } from './expense.service';
 import { Cache } from 'cache-manager';
-import { json } from 'stream/consumers';
 
 @Controller('expense')
 export class ExpenseController {
