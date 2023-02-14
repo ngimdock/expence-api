@@ -39,14 +39,25 @@ describe('SimpleService', () => {
     let result: number;
 
     beforeEach(() => {
-      jest.spyOn(Math, 'random').mockReturnValue(0.02);
-
       // Math.random = jest.fn().mockReturnValue(0.02);
+      // jest.spyOn(Math, 'random').mockReturnValue(0.02);
+
+      jest.spyOn(service, 'generateRandom').mockReturnValue(2);
 
       result = service.testMeWithMock(5);
     });
 
+    afterAll(() => {
+      jest.restoreAllMocks();
+    });
+
     describe('When called', () => {
+      it('generateRandom() should be called', () => {
+        expect(service.generateRandom).toHaveBeenCalled();
+
+        expect(service.generateRandom).toHaveReturnedWith(2);
+      });
+
       it('should return a number', () => {
         expect(typeof result).toBe('number');
       });
@@ -55,7 +66,7 @@ describe('SimpleService', () => {
         expect(result).toBe(7);
       });
 
-      test('just another test', () => {
+      it('just another test', () => {
         jest.restoreAllMocks();
 
         const value = service.testMeWithMock(10);

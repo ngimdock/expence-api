@@ -7,8 +7,12 @@ export class SimpleService {
   }
 
   testMeWithMock(value: number) {
-    const randomValue = Math.floor(Math.random() * 100);
+    const randomValue = this.generateRandom();
 
     return value + randomValue;
+  }
+
+  generateRandom() {
+    return Math.floor(Math.random() * 100);
   }
 }
