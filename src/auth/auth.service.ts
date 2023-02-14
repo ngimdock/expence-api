@@ -3,12 +3,13 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './dtos';
 import * as argon from 'argon2';
 import { CredentialsIncorrectException } from 'src/common/exception';
+import { UserSessionData } from './types';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async register(authDto: AuthDto) {
+  async register(authDto: AuthDto): Promise<UserSessionData> {
     const userExist = await this.prisma.user.findUnique({
       where: {
         email: authDto.email,
@@ -28,10 +29,10 @@ export class AuthService {
       data: userData,
     });
 
-    return { id: user.id, email: user.email };
+    return { id: user.id, email: user.email, role: user.role };
   }
 
-  async login(authDto: AuthDto) {
+  async login(authDto: AuthDto): Promise<UserSessionData> {
     const userFound = await this.prisma.user.findUnique({
       where: {
         email: authDto.email,
@@ -47,6 +48,6 @@ export class AuthService {
 
     if (!isPasswordValid) throw new CredentialsIncorrectException();
 
-    return { id: userFound.id, email: userFound.email };
+    return { id: userFound.id, email: userFound.email, role: userFound.role };
   }
 }

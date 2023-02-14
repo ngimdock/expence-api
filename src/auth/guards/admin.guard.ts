@@ -5,31 +5,33 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Role } from '@prisma/client';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
-import { IS_PUBLIC_ROUTE } from '../decorators';
+import { IS_ADMIN_ROUTE } from '../decorators';
 import { UserSession } from '../types';
 
 @Injectable()
-export class SessionGuard implements CanActivate {
+export class AdminGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const isPublicRoute = this.reflector.getAllAndOverride<boolean>(
-      IS_PUBLIC_ROUTE,
+    const isAdminRoute = this.reflector.getAllAndOverride<boolean>(
+      IS_ADMIN_ROUTE,
       [context.getClass(), context.getHandler()],
     );
 
-    // id public route bypass authoization
-    if (isPublicRoute) return true;
+    // if  not admin route, bypass authorization
+    if (!isAdminRoute) return true;
 
     const request = context.switchToHttp().getRequest() as Request;
 
-    const session = request.session as UserSession;
+    const { user: currentUser } = request.session as UserSession;
 
-    if (!session.user) throw new UnauthorizedException('Session not provided.');
+    if (currentUser.role !== Role.ADMIN)
+      throw new UnauthorizedException('Reserved for admins.');
 
     return true;
   }

@@ -8,6 +8,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id Int @id @default(autoincrement())
 
@@ -22,6 +27,8 @@ model User {
 
   initialBalance Int @default(2000)
   currentBalance Int @default(2000)
+
+  role Role @default(USER)
 
   expenses Expense[]
 

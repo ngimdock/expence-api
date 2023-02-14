@@ -10,7 +10,7 @@ import { AuthService } from './auth.service';
 import { PublicRoute } from './decorators';
 import { AuthDto } from './dtos';
 import { authRoutes } from './enums';
-import { UserSession } from './types';
+import { UserSession, UserSessionData } from './types';
 
 @Controller(authRoutes.auth)
 export class AuthController {
@@ -19,24 +19,28 @@ export class AuthController {
   @PublicRoute()
   @Post(authRoutes.register)
   async register(@Body() authDto: AuthDto, @Session() session: UserSession) {
-    const { id, email } = await this.authService.register(authDto);
+    const userSessionDta = await this.authService.register(authDto);
 
-    this.serializeSession(id, email, session);
+    this.serializeSession(userSessionDta, session);
   }
 
   @PublicRoute()
   @Post(authRoutes.login)
   @HttpCode(HttpStatus.OK)
   async login(@Body() authDto: AuthDto, @Session() session: UserSession) {
-    const { id, email } = await this.authService.login(authDto);
+    const userSessionDta = await this.authService.login(authDto);
 
-    this.serializeSession(id, email, session);
+    this.serializeSession(userSessionDta, session);
   }
 
-  private serializeSession(id: number, email: string, session: UserSession) {
+  private serializeSession(
+    userSessionDta: UserSessionData,
+    session: UserSession,
+  ) {
     session.user = {
-      id,
-      email,
+      id: userSessionDta.id,
+      email: userSessionDta.email,
+      role: userSessionDta.role,
     };
   }
 }

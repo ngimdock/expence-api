@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PaginateDto } from 'src/common/dtos';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -15,5 +16,25 @@ export class UserService {
     delete user.hash;
 
     return user;
+  }
+
+  async findAll(paginate: PaginateDto) {
+    const allUsers = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        firstname: true,
+        lastname: true,
+        createdAt: true,
+        _count: {
+          select: {
+            expenses: true,
+          },
+        },
+      },
+      skip: paginate.offset,
+      take: paginate.limit,
+    });
+
+    return allUsers;
   }
 }
