@@ -29,7 +29,6 @@ describe('SimpleService', () => {
       });
 
       it('Should return the value + 1', () => {
-        //
         expect(result).toBe(6);
       });
     });
