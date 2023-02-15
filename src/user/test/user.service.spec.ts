@@ -1,10 +1,12 @@
 import { Test } from '@nestjs/testing';
 import { UserService } from '../user.service';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Role, User } from '@prisma/client';
+import { User } from '@prisma/client';
+import { UserStub } from '../stubs';
 
 describe('UserService', () => {
   let service: UserService;
+  let prisma: PrismaService;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -14,17 +16,7 @@ describe('UserService', () => {
           provide: PrismaService,
           useValue: {
             user: {
-              findUnique: jest.fn().mockResolvedValue({
-                id: 1,
-                email: 'ngimdock@gmail.com',
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                firstname: null,
-                lastname: null,
-                initialBalance: 2000,
-                currentBalance: 1970,
-                role: Role.USER,
-              }),
+              findUnique: jest.fn().mockResolvedValue(UserStub()),
             },
           },
         },
@@ -32,6 +24,7 @@ describe('UserService', () => {
     }).compile();
 
     service = module.get(UserService);
+    prisma = module.get(PrismaService);
   });
 
   it('bootstrap', () => {
@@ -46,13 +39,22 @@ describe('UserService', () => {
     });
 
     describe('Went called', () => {
-      it('Should return a user', async () => {
-        expect(user).toBeDefined();
-        expect(user.id).toBe(1);
+      it('findUnique() should be called', () => {
+        expect(prisma.user.findUnique).toHaveBeenCalledWith({
+          where: {
+            id: UserStub().id,
+          },
+        });
+
+        expect(prisma.user.findUnique).toHaveReturnedWith(
+          Promise.resolve(UserStub()),
+        );
       });
 
-      it("Shouldn't return the user's password hash", () => {
-        expect(user.hash).toBeUndefined();
+      it('Should return a user', async () => {
+        const _user = UserStub();
+        delete _user.hash;
+        expect(user).toMatchObject(_user);
       });
     });
   });
