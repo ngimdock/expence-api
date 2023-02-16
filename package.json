@@ -12,7 +12,8 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "db:dev:start": "docker compose up -d",
-    "db:dev:stop": "docker compose stop dev-db",
+    "db:dev:stop": "docker compose down",
+    "db:dev:restart": "yarn db:dev:stop && yarn db:dev:start",
     "services:down": "docker compose down",
     "redis:cli": "docker exec -it expense-api-redis-1 redis-cli",
     "start:debug": "nest start --debug --watch",
@@ -22,6 +23,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "pretest:e2e": "prisma migrate deploy",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
