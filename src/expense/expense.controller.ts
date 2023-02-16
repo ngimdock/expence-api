@@ -27,7 +27,7 @@ export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(20)
+  @CacheTTL(5)
   @CacheKey('expenses')
   @Get()
   async findAllUserExpenses(
