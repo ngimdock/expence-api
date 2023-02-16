@@ -5,7 +5,7 @@ import { name, version } from 'package.json';
 @PublicRoute()
 @Controller()
 export class AppController {
-  @Get('status')
+  @Get('/status')
   getStatus() {
     return {
       name,
