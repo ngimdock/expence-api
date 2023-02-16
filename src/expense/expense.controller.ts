@@ -21,7 +21,7 @@ import { expenseRoutes } from './enums';
 import { ExpenseService } from './expense.service';
 import { Cache } from 'cache-manager';
 
-@Controller('expense')
+@Controller(expenseRoutes.expense)
 export class ExpenseController {
   private static readonly expenseId = 'expenseId';
 

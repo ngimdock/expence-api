@@ -23,10 +23,12 @@ import * as session from 'express-session';
 import { createClient } from 'redis';
 import * as connectRedis from 'connect-redis';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateExpenseDto } from 'src/expense/dtos';
 
 describe('App E2E', () => {
   let app: INestApplication;
   let redisClient: RedisClientType;
+  let cookie = '';
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -128,15 +130,13 @@ describe('App E2E', () => {
     });
 
     describe('Auth', () => {
-      let cookie = '';
+      const authDto: AuthDto = {
+        email: 'ngimdock@gmail.com',
+        password: '000000',
+      };
 
       describe('Register', () => {
         it('should register', async () => {
-          const authDto: AuthDto = {
-            email: 'ngimdock@gmail.com',
-            password: 'password',
-          };
-
           return request(app.getHttpServer())
             .post('/auth/register')
             .send(authDto)
@@ -150,11 +150,6 @@ describe('App E2E', () => {
 
       describe('Login', () => {
         it('should login', async () => {
-          const authDto: AuthDto = {
-            email: 'ngimdock@gmail.com',
-            password: 'password',
-          };
-
           return request(app.getHttpServer())
             .post('/auth/login')
             .send(authDto)
@@ -173,10 +168,62 @@ describe('App E2E', () => {
             .set('Cookie', cookie)
             .expect(HttpStatus.OK)
             .expect(({ body }) => {
-              console.log({ body });
+              console.log({ me: body });
             });
         });
       });
+    });
+
+    describe('Expense', () => {
+      it('should create 2 expenses', async () => {
+        const expenseDto1: CreateExpenseDto = {
+          title: 'First expense',
+          amount: '100',
+          date: new Date(),
+          description: 'description of the first expense',
+        };
+
+        const expenseDto2: CreateExpenseDto = {
+          title: 'second expense',
+          amount: '50',
+          date: new Date(),
+          description: 'description of the second expense',
+        };
+
+        await request(app.getHttpServer())
+          .post(`/expense/create`)
+          .set('Cookie', cookie)
+          .send(expenseDto1)
+          .expect(HttpStatus.CREATED)
+          .expect(({ body }) => {
+            console.log({ body });
+          });
+
+        await request(app.getHttpServer())
+          .post(`/expense/create`)
+          .set('Cookie', cookie)
+          .send(expenseDto2)
+          .expect(HttpStatus.CREATED);
+      });
+
+      it('should get all expenses', () => {
+        return request(app.getHttpServer())
+          .get('/expense')
+          .set('Cookie', cookie)
+          .expect(HttpStatus.OK)
+          .expect(({ body }) => {
+            expect(body).toEqual(
+              expect.objectContaining({
+                data: expect.any(Array),
+                count: 2,
+                hasMore: false,
+              }),
+            );
+          });
+      });
+      it.todo('should get expense by id');
+      it.todo('should update expense by id');
+      it.todo('should delete expense by id');
     });
   });
 });
