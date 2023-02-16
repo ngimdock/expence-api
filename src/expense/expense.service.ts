@@ -1,20 +1,16 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PaginateDto } from '../common/dtos';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResourseNotExist, ResourseAccessDenied } from '../common/exception';
 import { CreateExpenseDto, UpdateExpenseDto } from './dtos';
 import { PaginateResultType } from '../common/types';
-import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ExpenseService {
   private configService: ConfigService;
 
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAllUserExpenses(
     userId: number,

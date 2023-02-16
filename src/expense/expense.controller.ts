@@ -3,13 +3,11 @@ import {
   CacheInterceptor,
   CacheKey,
   CacheTTL,
-  CACHE_MANAGER,
   Controller,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
-  Inject,
   Param,
   Patch,
   Post,
@@ -21,16 +19,12 @@ import { PaginateDto } from '../common/dtos';
 import { CreateExpenseDto, UpdateExpenseDto } from './dtos';
 import { expenseRoutes } from './enums';
 import { ExpenseService } from './expense.service';
-import { Cache } from 'cache-manager';
 
 @Controller(expenseRoutes.expense)
 export class ExpenseController {
   private static readonly expenseId = 'expenseId';
 
-  constructor(
-    private readonly expenseService: ExpenseService,
-    @Inject(CACHE_MANAGER) private cacheService: Cache,
-  ) {}
+  constructor(private readonly expenseService: ExpenseService) {}
 
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(20)
@@ -48,18 +42,6 @@ export class ExpenseController {
     @GetUserId() userId: number,
     @Param(ExpenseController.expenseId) expenseId: number,
   ) {
-    await this.cacheService.set('lastname', 'John Doe');
-
-    const value = await this.cacheService.get('lastname');
-
-    const value2 = await this.cacheService.get(
-      'sess:K4rdxF1iOlaUwYx3nSMktuJrq2c_FEQB',
-    );
-
-    console.log({ value });
-
-    console.log({ value2 });
-
     return this.expenseService.findByIdUserExpense(userId, expenseId);
   }
 
