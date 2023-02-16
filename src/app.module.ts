@@ -10,6 +10,7 @@ import * as redisStore from 'cache-manager-redis-store';
 import { RedisClientOptions } from 'redis';
 import { SchedulerModule } from './scheduler/sheduler.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AppController } from './app.controller';
 
 @Global()
 @Module({
@@ -38,6 +39,8 @@ import { ScheduleModule } from '@nestjs/schedule';
       isGlobal: true,
     }),
   ],
+
+  controllers: [AppController],
 
   providers: [
     {
