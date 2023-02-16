@@ -33,7 +33,7 @@ export class ExpenseController {
   ) {}
 
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(10)
+  @CacheTTL(20)
   @CacheKey('expenses')
   @Get()
   async findAllUserExpenses(
