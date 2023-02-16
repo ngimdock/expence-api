@@ -7,6 +7,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Inject,
   Param,
   Patch,
@@ -82,6 +84,7 @@ export class ExpenseController {
     );
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(`:${ExpenseController.expenseId}`)
   async deleteByIdUserExpense(
     @GetUserId() userId: number,

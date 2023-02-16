@@ -23,7 +23,7 @@ import * as session from 'express-session';
 import { createClient } from 'redis';
 import * as connectRedis from 'connect-redis';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateExpenseDto } from 'src/expense/dtos';
+import { CreateExpenseDto, UpdateExpenseDto } from 'src/expense/dtos';
 
 describe('App E2E', () => {
   let app: INestApplication;
@@ -175,6 +175,8 @@ describe('App E2E', () => {
     });
 
     describe('Expense', () => {
+      let expenseId: number;
+
       it('should create 2 expenses', async () => {
         const expenseDto1: CreateExpenseDto = {
           title: 'First expense',
@@ -219,11 +221,55 @@ describe('App E2E', () => {
                 hasMore: false,
               }),
             );
+
+            expenseId = body?.data[0]?.id;
           });
       });
-      it.todo('should get expense by id');
-      it.todo('should update expense by id');
-      it.todo('should delete expense by id');
+
+      it('should get expense by id', async () => {
+        await request(app.getHttpServer()) // get expense with id that not exist
+          .get(`/expense/${0}`)
+          .set('Cookie', cookie)
+          .expect(HttpStatus.NOT_FOUND)
+          .expect(({ body }) => {
+            expect(body.message).toEqual('Resource does not exist');
+          });
+
+        await request(app.getHttpServer())
+          .get(`/expense/${expenseId}`)
+          .set('Cookie', cookie)
+          .expect(HttpStatus.OK)
+          .expect(({ body }) => {
+            expect(body).toBeTruthy();
+          });
+      });
+
+      it('should update expense by id', () => {
+        const updateExpenseDto: UpdateExpenseDto = {
+          description: 'updated description',
+        };
+
+        return request(app.getHttpServer())
+          .patch(`/expense/update/${expenseId}`)
+          .set('Cookie', cookie)
+          .send(updateExpenseDto)
+          .expect(HttpStatus.OK)
+          .expect(({ body }) => {
+            expect(body.description).toEqual(updateExpenseDto.description);
+          });
+      });
+
+      it('should delete expense by id', async () => {
+        await request(app.getHttpServer())
+          .delete(`/expense/${expenseId}`)
+          .set('Cookie', cookie)
+          .expect(HttpStatus.NO_CONTENT);
+
+        await request(app.getHttpServer())
+          .get(`/expense/${expenseId}`)
+          .set('Cookie', cookie)
+          .expect(HttpStatus.NOT_FOUND);
+      });
     });
   });
 });
